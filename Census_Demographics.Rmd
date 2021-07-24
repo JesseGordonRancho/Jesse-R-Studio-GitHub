@@ -28,7 +28,7 @@ The data comes from the 2019 Census estimates, with sources detailed in Census_D
 
 # How many people must be in a district, minimum? 
 # This is basically the population of Massachusetts divided by the number of State Rep districts.
-# That's 6.89 million / 160 = 43,062 (if doing State Senate distrits, divide by 40 instead of 160!)
+# That's 6.89 million / 160 = 43,062 (if doing State Senate districts, divide by 40 instead of 160!) 
 # The code stops when that figure is reached, but because every precinct is 3,000 to 4,000 people, the total could go to the minimum plus one precinct. So start a little low!
 target_district_size <- 42000
 
