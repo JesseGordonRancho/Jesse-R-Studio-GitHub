@@ -7,4 +7,5 @@ print("Goal is to get it onto GitHub, but I can't believe htis is as difficult a
 # Next... So far, you have created a file, saved it, staged it, and committed it. If you remember your version control lecture, the next step is to push your changes to your online repository. Push your changes to the GitHub repository.
 # Ok, so it's save > stage > comment > commit > push. Who invented that?!
 print("And it only shows up in Git tab if there's a change since the last save!")
+# And when you create a new file, you must "Pull" o sync up before pushing. Yeesh.
 
