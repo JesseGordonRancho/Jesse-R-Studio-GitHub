@@ -5,18 +5,75 @@ date: "7/24/2021"
 output: html_document
 ---
 
+# Setup functions
+
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
 ```
 
-## Census_Demographics to Git
+# Census_Demographics Description
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+This script identifies the demographics of possible State Rep districts surrounding Randolph Massahsetts. The goal is to identify possible "majority-minority districts" where all of Randolph is included, with several surrounding precincts, in such a way that the result is a majority non-white district. 
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+The rules are that districts must be "contiguous", with all precincts touching one another. So we start with the "Core" of 12 precincts of Randolph, then loop through all of the immediately "Adjacent" precincts, adding contiguous "Distant" or other "Adjacent" precincts until the target population is reached for the whole district. 
 
-```{r cars}
-summary(cars)
+The results will be submitted to the Joint Committee on Redistricting, with political considerations added (for example, the Committee Chair wants to protect Milton precincts 1 and 10 because they are in another majority-minority district -- so that district should show up in our resuts, but should not get submitted as a possible district.) This script could also be used for a State Senate district by adding more surrounding towns and Boston wards. 
+
+The data comes from the 2019 Census estimates, with sources detailed in Census_Demographics.xls. It will need a 2020 update once the Census data is finalized. You can fill in the new figures when available -- the spreadsheet is arranged in the same manner as the online census report, for easy manual transfer (I guess one could write a "scraper" script!). The Committee Chair claimed that the 2020 data is available already (July 2021), but that's not true -- there's no precinct-by-precinct breakdown available yet, except in Pennsylvania. 
+
+# Setup data
+
+```{r initializations}
+
+# How many people must be in a district, minimum? 
+# This is basically the population of Massachusetts divided by the number of State Rep districts.
+# That's 6.89 million / 160 = 43,062 (if doing State Senate distrits, divide by 40 instead of 160!)
+# The code stops when that figure is reached, but because every precinct is 3,000 to 4,000 people, the total could go to the minimum plus one precinct. So start a little low!
+target_district_size <- 42000
+
+raw_census_path <- getwd() 
+raw_census_file <- str_c (raw_census_path, '/Census_Demographics.csv')
+raw_census <- read_csv(raw_census_file)   # Very raw! In two sections!
+
+max_census_rows <- nrow(raw_census)
+max_census_cols <- ncol(raw_census)
+
+
+```
+
+# Setup demographic data
+
+First section: demographic info in one column per precinct, pivoted into this format: 
+Precinct_Name/Precinct_Status/Precinct_White/Precinct_Non_White
+
+```{r initializations}
+
+
+demographic_colnames <- c("Precinct_Name", "Precinct_Status", "Precinct_White", "Precinct_Non_White")
+
+demographic_info <- as_tibble(data.frame(matrix(nrow=0,ncol=length(demographic_colnames)))) 
+
+colnames(demographic_info) <- demographic_colnames
+demographic_info$Precinct_Name   <-as.character(demographic_info$Precinct_Name)
+demographic_info$Precinct_Status <-as.character(demographic_info$Precinct_Status)
+demographic_info$Precinct_White  <-as.integer(demographic_info$Precinct_White)
+demographic_info$Precinct_Non_White  <- as.integer(demographic_info$Precinct_Non_White)
+
+demographic_input <- 1
+while (demographic_input < max_census_cols) {
+  precinct_name <- colnames(raw_census)[demographic_input]
+  white_count <- as.numeric(raw_census[2,demographic_input])
+  # Add up  Hispanic, Black, Asian, Native, Pacific census counts 
+  non_white_count <- as.numeric(raw_census[3,demographic_input]) + as.numeric(raw_census[4,demographic_input]) + as.numeric(raw_census[5,demographic_input]) + as.numeric(raw_census[6,demographic_input]) + as.numeric(raw_census[7,demographic_input]) 
+  contiguity_status <- as.character(raw_census[9,demographic_input])
+  if (contiguity_status == 'Core' || contiguity_status == 'Adjacent' || contiguity_status == 'Distant') {
+    # print(paste (non_white_count, precinct_name))
+    demographic_info <- demographic_info %>% add_row("Precinct_Name" = precinct_name, "Precinct_Status" = contiguity_status, "Precinct_White" = white_count, "Precinct_Non_White" = non_white_count)
+  }
+  demographic_input = demographic_input+1
+}
+
 ```
 
 ## Including Plots edited in GitHub
