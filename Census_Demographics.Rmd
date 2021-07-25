@@ -47,7 +47,7 @@ max_census_cols <- ncol(raw_census)
 First section: demographic info in one column per precinct, pivoted into this format: 
 Precinct_Name/Precinct_Status/Precinct_White/Precinct_Non_White
 
-```{r initializations}
+```{r initialize_demographics}
 
 
 demographic_colnames <- c("Precinct_Name", "Precinct_Status", "Precinct_White", "Precinct_Non_White")
@@ -64,7 +64,7 @@ demographic_input <- 1
 while (demographic_input < max_census_cols) {
   precinct_name <- colnames(raw_census)[demographic_input]
   white_count <- as.numeric(raw_census[2,demographic_input])
-  # Add up  Hispanic, Black, Asian, Native, Pacific census counts 
+  # Add up Hispanic, Black, Asian, Native, Pacific census counts 
   non_white_count <- as.numeric(raw_census[3,demographic_input]) + as.numeric(raw_census[4,demographic_input]) + as.numeric(raw_census[5,demographic_input]) + as.numeric(raw_census[6,demographic_input]) + as.numeric(raw_census[7,demographic_input]) 
   contiguity_status <- as.character(raw_census[9,demographic_input])
   if (contiguity_status == 'Core' || contiguity_status == 'Adjacent' || contiguity_status == 'Distant') {
@@ -73,6 +73,62 @@ while (demographic_input < max_census_cols) {
   }
   demographic_input = demographic_input+1
 }
+
+```
+
+# Contiguity tables
+
+Basic method is: for each adjacent precinct, add it and keep adding contiguous precincts until target size is reached. Here we set up what's adjacent, and which ones can be added ("non-core")
+
+```{r initialize_contiguity}
+ 
+contiguity_core <- demographic_info %>% 
+  filter (Precinct_Status == "Core") %>%
+  select (Precinct_Name, Precinct_Status)
+
+contiguity_adjacent <- demographic_info %>% 
+  filter (Precinct_Status == "Adjacent") %>%
+  select (Precinct_Name, Precinct_Status)
+
+contiguity_non_core <- demographic_info %>% 
+  filter (Precinct_Status != "Core" ) %>%
+  select (Precinct_Name, Precinct_Status)
+
+```
+
+# Setup contiguity data
+
+Second section: for all non-core precincts, contiguity info in this format: 
+Main_Precinct_Name/Contiguous_Precinct_Name
+There are numerous "excess" precincts too (like Boston) -- they're in red in the original XLS spreadsheet, and we reomve them here by seeing if their name is valid (if it exists in non-core precincts)
+
+```{r setup_contiguity}
+contiguity_colnames <- c("Main_Precinct_Name", "Contiguous_Precinct_Name")
+
+contiguity_info <- as_tibble(data.frame(matrix(nrow=0,ncol=length(contiguity_colnames)))) 
+
+colnames(contiguity_info) <- contiguity_colnames
+contiguity_info$Main_Precinct_Name   <-as.character(demographic_info$Main_Precinct_Name)
+contiguity_info$Contiguous_Precinct_Name <-as.character(demographic_info$Contiguous_Precinct_Name)
+
+demographic_input <- 1
+while (demographic_input < max_census_cols) {
+  precinct_name <- colnames(raw_census)[demographic_input]
+  contiguity_status <- as.character(raw_census[9,demographic_input])
+  if (contiguity_status == 'Adjacent' || contiguity_status == 'Distant') {
+      contiguity_input <- 10
+      while (contiguity_input < 20) {
+         contiguous_name <- as.character(raw_census[contiguity_input,demographic_input])
+        # if (contiguous_name != 'NA') {
+            contiguity_info <- contiguity_info %>% add_row("Main_Precinct_Name" = precinct_name, "Contiguous_Precinct_Name" = contiguous_name)
+         #}  # if contiguous_name != 'NA'
+        contiguity_input = contiguity_input + 1
+       }  # while contiguity_input < 20
+    }  # if Adjacent or Distant
+  demographic_input = demographic_input + 1
+}  # while demographic_input < max_census_cols
+
+contiguity_info %>% drop_na()
 
 ```
 
