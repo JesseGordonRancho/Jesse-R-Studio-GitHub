@@ -151,7 +151,7 @@ contiguity_info <- contiguity_info %>% drop_na()
 
 ```{r setup_districts}
 
-district_colnames <- c("Pct1_Name", "Pct2_Name", "Pct3_Name","District_White", "District_Non_White", "District_Size")
+district_colnames <- c("Pct1_Name", "Pct2_Name", "Pct3_Name","District_White", "District_Non_White", "District_Size", "Pct1_White", "Pct2_White", "Pct3_White", "Pct1_Non_White", "Pct2_Non_White", "Pct3_Non_White" )
 
 district_info <- as_tibble(data.frame(matrix(nrow=0,ncol=length(district_colnames)))) 
 
@@ -162,6 +162,12 @@ district_info$Pct3_Name   <-as.character(district_info$Pct3_Name)
 district_info$District_White  <-as.integer(district_info$District_White)
 district_info$District_Non_White <- as.integer(district_info$District_Non_White)
 district_info$District_Size <- as.integer(district_info$District_Size)
+district_info$Pct1_White  <-as.integer(district_info$Pct1_White)
+district_info$Pct2_White  <-as.integer(district_info$Pct2_White)
+district_info$Pct3_White  <-as.integer(district_info$Pct3_White)
+district_info$Pct1_Non_White <- as.integer(district_info$Pct1_Non_White)
+district_info$Pct2_Non_White <- as.integer(district_info$Pct2_Non_White)
+district_info$Pct3_Non_White <- as.integer(district_info$Pct3_Non_White)
 
 for (Pct1_input in 1:nrow(contiguity_adjacent)) {  
   pct1_name <- contiguity_adjacent$Precinct_Name[Pct1_input]
@@ -170,19 +176,19 @@ for (Pct1_input in 1:nrow(contiguity_adjacent)) {
   pct1_non_white_size <- contiguity_adjacent$Precinct_Non_White[Pct1_input]
   for (Pct2_input in 1:nrow(pct1_contiguity)) {  
     pct2_name <- pct1_contiguity$Contiguous_Name[Pct2_input]
+    pct2_white_size <- pct1_contiguity$Precinct_White[Pct2_input]
+    pct2_non_white_size <- pct1_contiguity$Precinct_Non_White[Pct2_input]
     pct2_contiguity <- contiguity_info %>% filter (Main_Precinct_Name == pct2_name) 
-    pct2_white_size <- pct2_contiguity$Precinct_White[Pct2_input]
-    pct2_non_white_size <- pct2_contiguity$Precinct_Non_White[Pct2_input]
     for (Pct3_input in 1:nrow(pct2_contiguity)) {  
       pct3_name <- pct2_contiguity$Contiguous_Name[Pct3_input]
+      pct3_white_size <- pct2_contiguity$Precinct_White[Pct3_input]
+      pct3_non_white_size <- pct2_contiguity$Precinct_Non_White[Pct3_input]
       pct3_contiguity <- contiguity_info %>% filter (Main_Precinct_Name == pct3_name) 
-      pct3_white_size <- pct3_contiguity$Precinct_White[Pct3_input]
-      pct3_non_white_size <- pct3_contiguity$Precinct_Non_White[Pct3_input]
       if (pct1_name != pct2_name & pct1_name != pct3_name) {
         district_white <- core_white_size + pct1_white_size + pct2_white_size + pct3_white_size
         district_non_white <- core_non_white_size + pct1_non_white_size + pct2_non_white_size + pct3_non_white_size
         district_size <- district_non_white + district_white
-        district_info <- district_info %>% add_row("Pct1_Name" = pct1_name, "Pct2_Name" = pct2_name, "Pct3_Name" = pct3_name, "District_White" = district_white, "District_Non_White" = district_non_white, "District_Size" = district_size)
+        district_info <- district_info %>% add_row("Pct1_Name" = pct1_name, "Pct2_Name" = pct2_name, "Pct3_Name" = pct3_name, "District_White" = district_white, "District_Non_White" = district_non_white, "District_Size" = district_size, "Pct1_Non_White" = pct1_non_white_size, "Pct2_Non_White" = pct2_non_white_size, "Pct3_Non_White" = pct3_non_white_size, "Pct1_White" = pct1_white_size, "Pct2_White" = pct2_white_size, "Pct3_White" = pct3_white_size)
       } # If three different pct's
     } # for Pct3_input
   }   # for Pct2_input
