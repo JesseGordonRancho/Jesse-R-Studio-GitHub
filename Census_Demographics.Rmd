@@ -151,12 +151,11 @@ contiguity_info <- contiguity_info %>% drop_na()
 
 ```{r setup_districts}
 
-district_colnames <- c("District_Code", "Pct1_Name", "Pct2_Name", "Pct3_Name","District_White", "District_Non_White", "District_Size")
+district_colnames <- c("Pct1_Name", "Pct2_Name", "Pct3_Name","District_White", "District_Non_White", "District_Size")
 
 district_info <- as_tibble(data.frame(matrix(nrow=0,ncol=length(district_colnames)))) 
 
 colnames(district_info) <- district_colnames
-district_info$District_Code   <-as.integer(district_info$District_Code)
 district_info$Pct1_Name   <-as.character(district_info$Pct1_Name)
 district_info$Pct2_Name   <-as.character(district_info$Pct2_Name)
 district_info$Pct3_Name   <-as.character(district_info$Pct3_Name)
@@ -167,44 +166,27 @@ district_info$District_Size <- as.integer(district_info$District_Size)
 for (Pct1_input in 1:nrow(contiguity_adjacent)) {  
   pct1_name <- contiguity_adjacent$Precinct_Name[Pct1_input]
   pct1_contiguity <- contiguity_info %>% filter (Main_Precinct_Name == pct1_name) 
+  pct1_white_size <- contiguity_adjacent$Precinct_White[Pct1_input]
+  pct1_non_white_size <- contiguity_adjacent$Precinct_Non_White[Pct1_input]
   for (Pct2_input in 1:nrow(pct1_contiguity)) {  
     pct2_name <- pct1_contiguity$Contiguous_Name[Pct2_input]
     pct2_contiguity <- contiguity_info %>% filter (Main_Precinct_Name == pct2_name) 
+    pct2_white_size <- pct2_contiguity$Precinct_White[Pct2_input]
+    pct2_non_white_size <- pct2_contiguity$Precinct_Non_White[Pct2_input]
     for (Pct3_input in 1:nrow(pct2_contiguity)) {  
       pct3_name <- pct2_contiguity$Contiguous_Name[Pct3_input]
+      pct3_contiguity <- contiguity_info %>% filter (Main_Precinct_Name == pct3_name) 
+      pct3_white_size <- pct3_contiguity$Precinct_White[Pct3_input]
+      pct3_non_white_size <- pct3_contiguity$Precinct_Non_White[Pct3_input]
       if (pct1_name != pct2_name & pct1_name != pct3_name) {
-        district_info <- district_info %>% add_row("Pct1_Name" = pct1_name, "Pct2_Name" = pct2_name, "Pct3_Name" = pct3_name)
+        district_white <- core_white_size + pct1_white_size + pct2_white_size + pct3_white_size
+        district_non_white <- core_non_white_size + pct1_non_white_size + pct2_non_white_size + pct3_non_white_size
+        district_size <- district_non_white + district_white
+        district_info <- district_info %>% add_row("Pct1_Name" = pct1_name, "Pct2_Name" = pct2_name, "Pct3_Name" = pct3_name, "District_White" = district_white, "District_Non_White" = district_non_white, "District_Size" = district_size)
       } # If three different pct's
     } # for Pct3_input
   }   # for Pct2_input
 }     # for Pct1_input
-```
-
-``` {Yeesh}
-district_non_white_size <- district_non_white_size + contiguity_adjacent$Precinct_Non_White[adjacent_input]
-district_white_size <- district_white_size + contiguity_adjacent$Precinct_White[adjacent_input]
-district_size <- district_non_white_size + district_white_size
-
-district_info <- district_info %>% add_row("Precinct_Code" = adjacent_input, "Precinct_Name" = contiguity_adjacent$Precinct_Name[adjacent_input], "Precinct_Status" = contiguity_adjacent$Precinct_Status[adjacent_input], "Precinct_White" = district_white_size, "Precinct_Non_White" = district_non_white_size)
-
-district_output <- 1  # Start output with adjacent district
-district_info$Precinct_Name[district_output] <- contiguity_adjacent$Precinct_Name[adjacent_input]
-
-non_core_input <- 0  # Start counting
-while (district_size < target_district_size) {
-  non_core_input <- non_core_input + 1 
-
-  # Check if valid district (in range and not in list already)
-  if (contiguity_non_core$Precinct_Name[non_core_input] %in% district_info$Precinct_Name) { # skip if it's in already!
-    } else {   # Add in the new precinct to the district
-    district_non_white_size <- district_non_white_size + contiguity_non_core$Precinct_Non_White[non_core_input]
-  district_white_size <- district_white_size + contiguity_non_core$Precinct_White[non_core_input]
-  district_size <- district_non_white_size + district_white_size
-  district_output <- district_output + 1
-  district_info <- district_info %>% add_row("Precinct_Code" = adjacent_input, "Precinct_Name" = contiguity_non_core$Precinct_Name[non_core_input], "Precinct_Status" = contiguity_non_core$Precinct_Status[non_core_input], "Precinct_White" = district_white_size, "Precinct_Non_White" = district_non_white_size)
-    } # if not %in% district already
-  }
-} # for (adjacent_input
 ```
 
 To create other majority-minority State Rep districts, get new census figures by precinct and upload a CSV file. That should be done for Randolph 2020 when new figures are available. 
