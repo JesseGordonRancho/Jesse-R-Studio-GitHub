@@ -27,6 +27,7 @@ Go thru all Randolph-contiguous pcts,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 "Source: DavesRedistricting.org for Massachusetts, total population 2019 (not Citizen VAP, which is voting age population)",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 "Source recommendation is from MALegislature.gov/Redistricting/DrawYourOwnDistrict -- it links to three, but the other two are non-functional -- ""Public Mapping Project"" is PA only; ""District Builder"" has dozens of states but not MA. ",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+<<<<<<< HEAD
 "For ""Confirm vs. Census"" columns, source is… census.gov/quickfacts/fact/table/randolphtowncitymassachusetts US Census Bureau ""Quick Facts"" for each town",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 "Note: Holbrook and Avon are too small to get 2019 estimates by Census Bureau, but they do have race demographics and 2010 figures -- so those are used in comparison to WorldPopulationReview.com/us-cities total population estimates",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 "Output this whole XLS as a CSV without commas (it doesn't parse with the commas, but they make it a lot easier to read)",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
@@ -52,3 +53,8 @@ Go thru all Randolph-contiguous pcts,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 >>>>>>> f3ad368538a229c4aa7c5da8a32b4df14da561da,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+=======
+"For ""Confirm vs. Census"" columns, source isâ€¦ census.gov/quickfacts/fact/table/randolphtowncitymassachusetts US Census Bureau ""Quick Facts"" for each town",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+"Note: Holbrook and Avon are too small to get 2019 estimates by Census Bureau, but they do have race demographics and 2010 figures -- so those are used in comparison to WorldPopulationReview.com/us-cities total population estimates",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+"Output this whole XLS as a CSV without commas (it doesn't parse with the commas, but they make it a lot easier to read)",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+>>>>>>> ed94f49428be2c3f2fd9e8fd7751ef556c2a86db
