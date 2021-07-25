@@ -116,13 +116,11 @@ while (demographic_input < max_census_cols) {
   precinct_name <- colnames(raw_census)[demographic_input]
   contiguity_status <- as.character(raw_census[9,demographic_input])
   if (contiguity_status == 'Adjacent' || contiguity_status == 'Distant') {
-      contiguity_input <- 10
-      while (contiguity_input < 20) {
+       contiguity_input <- 10
+       while (contiguity_input < 20) {
          contiguous_name <- as.character(raw_census[contiguity_input,demographic_input])
-        # if (contiguous_name != 'NA') {
-            contiguity_info <- contiguity_info %>% add_row("Main_Precinct_Name" = precinct_name, "Contiguous_Precinct_Name" = contiguous_name)
-         #}  # if contiguous_name != 'NA'
-        contiguity_input = contiguity_input + 1
+       contiguity_info <- contiguity_info %>% add_row("Main_Precinct_Name" = precinct_name, "Contiguous_Precinct_Name" = contiguous_name)
+       contiguity_input = contiguity_input + 1
        }  # while contiguity_input < 20
     }  # if Adjacent or Distant
   demographic_input = demographic_input + 1
@@ -137,7 +135,7 @@ contiguity_info %>% drop_na()
 You can also embed plots, for example:
 
 ```{r pressure, echo=FALSE}
-plot(pressure)
+plot(pressure) 
 ```
 
 Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
