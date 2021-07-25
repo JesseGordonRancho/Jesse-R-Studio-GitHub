@@ -84,15 +84,18 @@ Basic method is: for each adjacent precinct, add it and keep adding contiguous p
  
 contiguity_core <- demographic_info %>% 
   filter (Precinct_Status == "Core") %>%
-  select (Precinct_Name, Precinct_Status)
+  select (Precinct_Name, Precinct_Status, Precinct_White, Precinct_Non_White)
+
+core_white_count <- sum(contiguity_core$Precinct_White,na.rm=TRUE)
+core_non_white_count <- sum(contiguity_core$Precinct_Non_White)
 
 contiguity_adjacent <- demographic_info %>% 
   filter (Precinct_Status == "Adjacent") %>%
-  select (Precinct_Name, Precinct_Status)
+  select (Precinct_Name, Precinct_Status, Precinct_White, Precinct_Non_White)
 
 contiguity_non_core <- demographic_info %>% 
   filter (Precinct_Status != "Core" ) %>%
-  select (Precinct_Name, Precinct_Status)
+  select (Precinct_Name, Precinct_Status, Precinct_White, Precinct_Non_White)
 
 ```
 
@@ -100,7 +103,7 @@ contiguity_non_core <- demographic_info %>%
 
 Second section: for all non-core precincts, contiguity info in this format: 
 Main_Precinct_Name/Contiguous_Precinct_Name
-There are numerous "excess" precincts too (like Boston) -- they're in red in the original XLS spreadsheet, and we reomve them here by seeing if their name is valid (if it exists in non-core precincts)
+There are numerous "excess" precincts too (like Boston) -- they're in red in the original XLS spreadsheet, and we include them here but ignore them by seeing if their name is valid (if it exists in non-core precincts). To add MORE territory for a wider analysis, just fill those in!
 
 ```{r setup_contiguity}
 contiguity_colnames <- c("Main_Precinct_Name", "Contiguous_Precinct_Name")
@@ -126,16 +129,24 @@ while (demographic_input < max_census_cols) {
   demographic_input = demographic_input + 1
 }  # while demographic_input < max_census_cols
 
-contiguity_info %>% drop_na()
+contiguity_info <- contiguity_info %>% drop_na()
 
 ```
 
-## Including Plots edited in GitHub
+# Let's make some districts! Our method:
+- Start with the contiguity_core of 12 Randolph precincts. 
+- Add one of the contiguity_adjacent precincts, looping through them. - Add ITS contiguous precincts, loopin thru contiguity_non_core...
+- ...until target size reached (& output)
+- Repeat that for every possibility to build complete output list
+- Calculate the white and non-white figures, and rank by percent!
 
-You can also embed plots, for example:
+```{r districts}
 
-```{r pressure, echo=FALSE}
-plot(pressure) 
+
+
+
+ 
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+To create other majority-minority State Rep districts, get new census figures by precinct and upload a CSV file.
+To create majority-minority State Senate districts, use 160,000 as target size, but must add Boston and Brockton (at least!) 
