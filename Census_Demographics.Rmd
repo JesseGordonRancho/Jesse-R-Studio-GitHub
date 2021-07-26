@@ -193,6 +193,9 @@ for (Pct1_input in 1:nrow(contiguity_adjacent)) {
     } # for Pct3_input
   }   # for Pct2_input
 }     # for Pct1_input
+
+write_csv(district_info, "Census_Districts.csv")  
+
 ```
 
 To create other majority-minority State Rep districts, get new census figures by precinct and upload a CSV file. That should be done for Randolph 2020 when new figures are available. 
